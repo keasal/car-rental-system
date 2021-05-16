@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zengkai.dao.CarDao">
+    <resultMap type="com.zengkai.entity.CarInfo" id="CarMap">
+        <result property="model" column="model"/>
+        <result property="inStock" column="in_stock"/>
+    </resultMap>
+
+    <resultMap type="com.zengkai.entity.RentalRecord" id="RentalRecordMap">
+        <result property="recordId" column="record_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="model" column="model"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="status" column="status"/>
+        <result property="fcd" column="fcd"/>
+        <result property="lcd" column="lcd"/>
+    </resultMap>
+
+    <select id="selectAllCars" resultMap="CarMap">
+        select model,in_stock from car_info
+    </select>
+
+    <select id="selectOneCarByModel" resultMap="CarMap">
+        select model,in_stock from car_info where model = #{model,jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateCarIncrease" parameterType="String">
+      update car_info set in_stock = in_stock+1 where model = #{model,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateCarReduce" parameterType="String">
+      update car_info set in_stock = in_stock-1 where model = #{model,jdbcType=VARCHAR}
+    </update>
+
+
+
+    <select id="selectAllRecordsByUserName" resultMap="RentalRecordMap" parameterType="String">
+        select model,start_date,end_date,status,lcd from user_rental_record where user_name = #{userName,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectRecordByRecordId" resultMap="RentalRecordMap" parameterType="Long">
+        select record_id,model,start_date,end_date,status,lcd from user_rental_record where record_id = #{recordId,jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateRentalRecord" parameterType="com.zengkai.entity.RentalRecord">
+      update user_rental_record set status = #{status,jdbcType=VARCHAR},lcd = CURRENT_TIMESTAMP where record_id = #{recordId,jdbcType=BIGINT}
+    </update>
+
+    <insert id="insertRentalRecord" parameterType="com.zengkai.entity.RentalRecord">
+        insert into user_rental_record
+        (user_name,
+        model,
+        start_date,
+        end_date,
+        status)
+        values
+        (
+        #{userName,jdbcType=VARCHAR},
+        #{model,jdbcType=VARCHAR},
+        #{startDate,jdbcType=DATE},
+        #{endDate,jdbcType=DATE},
+        #{status,jdbcType=VARCHAR}
+        )
+    </insert>
+</mapper>
